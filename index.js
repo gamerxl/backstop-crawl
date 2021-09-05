@@ -2,6 +2,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const meow = require('meow');
 const validurl = require('valid-url').is_web_uri;
 const updateNotifier = require('update-notifier');
@@ -33,6 +34,8 @@ const cli = meow(
       --reference-url  Allows a reference URL to be used in testing
       --strip-querystring  Strips the query string from pages
       --max-depth          Maximum depth to crawl
+      --template           Specify the template file to use
+                           Defaults to backstop.template.json
 
     Examples
       $ backstop-crawl http://localhost
@@ -68,6 +71,17 @@ if (cli.flags.referenceUrl) {
         );
         process.exit(1);
     }
+}
+
+if (cli.flags.template) {
+    fs.access(cli.flags.template, fs.F_OK, (err) => {
+        if (err) {
+            console.error(
+                `> Error: "${cli.flags.template}" doesn't exist`
+            );
+            process.exit(1);
+        }
+    })
 }
 
 if (cli.input.length > 0) {
